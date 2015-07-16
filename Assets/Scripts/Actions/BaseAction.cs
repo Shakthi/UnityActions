@@ -72,7 +72,7 @@ namespace CC
 
 		}
 
-		public virtual void Lerp(float delta)
+		public virtual void LerpAction(float delta)
 		{
 		}
 
@@ -141,7 +141,7 @@ namespace CC
 				completedTime += delta;
 			}
 
-			Lerp(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
+			LerpAction(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace CC
 			this.endPosition = endPosition;
 		}
 		
-		public  override void Lerp(float deltaTime)
+		public  override void LerpAction(float deltaTime)
 		{
 			target.position = Vector3.Lerp(startPosition,endPosition,deltaTime);
 
@@ -191,7 +191,7 @@ namespace CC
 			this.delta = delta;
 		}
 		
-		public  override void Lerp(float deltaTime)
+		public  override void LerpAction(float deltaTime)
 		{
 			target.position = ((startPosition + delta) * deltaTime );
 		}
@@ -221,7 +221,7 @@ namespace CC
 		}
 
 
-		public  override void Lerp(float deltaTime)
+		public  override void LerpAction(float deltaTime)
 		{
 			target.rotation  = Quaternion.Lerp(_startRotation,_dstAngle,deltaTime);
 		}
