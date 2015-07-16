@@ -30,7 +30,7 @@ namespace CC
 
 				if(!currentAction.IsDone())
 				{
-					currentAction.Step(Time.deltaTime);
+					currentAction.Update(Time.deltaTime);
 				}else
 				{
 					currentAction.Stop();
@@ -72,11 +72,11 @@ namespace CC
 
 		}
 
-		public virtual void ProgressUpdate(float delta)
+		public virtual void Lerp(float delta)
 		{
 		}
 
-		public virtual void Step(float delta)
+		public virtual void Update(float delta)
 		{
 
 		}
@@ -129,7 +129,7 @@ namespace CC
 			return (completedTime >= duration);
 		}
 
-		public override void Step(float delta)
+		public override void Update(float delta)
 		{
 			if(isFirstTick)
 			{
@@ -141,7 +141,7 @@ namespace CC
 				completedTime += delta;
 			}
 
-			ProgressUpdate(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
+			Lerp(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace CC
 			this.endPosition = endPosition;
 		}
 		
-		public  override void ProgressUpdate(float deltaTime)
+		public  override void Lerp(float deltaTime)
 		{
 			target.position = Vector3.Lerp(startPosition,endPosition,deltaTime);
 
@@ -191,7 +191,7 @@ namespace CC
 			this.delta = delta;
 		}
 		
-		public  override void ProgressUpdate(float deltaTime)
+		public  override void Lerp(float deltaTime)
 		{
 			target.position = ((startPosition + delta) * deltaTime );
 		}
@@ -221,7 +221,7 @@ namespace CC
 		}
 
 
-		public  override void ProgressUpdate(float deltaTime)
+		public  override void Lerp(float deltaTime)
 		{
 			target.rotation  = Quaternion.Lerp(_startRotation,_dstAngle,deltaTime);
 		}
