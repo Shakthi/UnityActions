@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+
 
 
 namespace CC
@@ -7,24 +8,42 @@ namespace CC
 
 	public class BaseAction
 	{
+		protected const float epsilon = 1.192092896e-07F;
 
 	}
 
 	class ActionRunner:MonoBehaviour
 	{
-		public Action actionToRun;
+		public List<Action> actionsToRun;
 		
 		void Update()
 		{
-			if(!actionToRun.IsDone())
+
+			for(int i=0;i<actionsToRun.Count ; i++)
 			{
-				actionToRun.Step(Time.deltaTime);
-		
+				Action currentAction = actionsToRun[i];
+				if(!currentAction.IsStarted())
+				{
+					currentAction.StartWithTarget(transform);
+						
+				}
+
+				if(!currentAction.IsDone())
+				{
+					currentAction.Step(Time.deltaTime);
+				}else
+				{
+					currentAction.Stop();
+					actionsToRun.RemoveAt(i);
+					i--;
+
+				}
+
 			}
-			else
-			{
+
+			if(actionsToRun.Count==0)
 				Destroy(this);
-			}
+
 
 		}
 	}
@@ -32,20 +51,28 @@ namespace CC
 	public class Action : BaseAction
 	{
 		protected Transform target;
+		bool isStarted;
 
-		public static void Run(Transform movingObject ,Action aAction)
+
+		public bool IsStarted()
+		{
+			return isStarted;
+		}
+
+
+		public static void Run(Transform targetTransform ,Action anAction)
 		{	
-			ActionRunner runner =  movingObject.GetComponent<ActionRunner>();
+			ActionRunner runner =  targetTransform.GetComponent<ActionRunner>();
 			if(runner == null)
 			{
-				runner = movingObject.gameObject.AddComponent<ActionRunner>();
-				runner.actionToRun = aAction;
+				runner = targetTransform.gameObject.AddComponent<ActionRunner>();
+				runner.actionsToRun = new List<Action>();
 			}
-			aAction.StartWithTarget(movingObject);
+			runner.actionsToRun.Add(anAction);
 
 		}
 
-		public virtual void Update(float delta)
+		public virtual void ProgressUpdate(float delta)
 		{
 		}
 
@@ -57,6 +84,7 @@ namespace CC
 		public virtual void StartWithTarget(Transform inTarget)
 		{
 			target = inTarget;
+			isStarted = true;
 		}
 
 		public void Stop()
@@ -75,16 +103,25 @@ namespace CC
 		protected float duration;
 	}
 
-	public class ActionIntervel : FiniteTimeAction
+	public class ActionInterval : FiniteTimeAction
 	{
 		float completedTime;
 		bool isFirstTick;
 
-		public ActionIntervel(float duration)
+		public ActionInterval(float duration)
 		{
 			completedTime = 0;
 			this.duration = duration;
 			isFirstTick = true;
+			if (duration == 0)
+			{
+				this.duration = epsilon;
+			}else
+			{
+				this.duration = duration;
+			}
+
+
 		}
 
 		public override bool IsDone()
@@ -94,8 +131,6 @@ namespace CC
 
 		public override void Step(float delta)
 		{
-			Debug.Log("Step is called");
-
 			if(isFirstTick)
 			{
 				isFirstTick = false;
@@ -106,34 +141,133 @@ namespace CC
 				completedTime += delta;
 			}
 
-			Update(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
+			ProgressUpdate(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
 		}
 	}
 
 
+/** @class MoveTo
+ * @brief Moves a trasform to the position endposition
 
-	public class MoveTo : ActionIntervel
+ */
+	public class MoveTo : ActionInterval
 	{
 		Vector3 endPosition;
 		Vector3 startPosition;
-		Vector3 delta;
-		
+
 		public MoveTo(float duration ,Vector3 endPosition ):base(duration)
 		{
 			this.endPosition = endPosition;
 		}
 		
-		public  override void Update(float deltaTime)
+		public  override void ProgressUpdate(float deltaTime)
 		{
-			target.position = ((startPosition + delta) * deltaTime );
+			target.position = Vector3.Lerp(startPosition,endPosition,deltaTime);
+
 		}
 
 		public override void StartWithTarget(Transform inTarget)
 		{
 			base.StartWithTarget(inTarget);
 			startPosition = inTarget.position;
-			delta = endPosition - startPosition;
 		}
 
 	}
+
+
+/** @class MoveBy
+ * @brief Moves a trasform  by modifying it's position attribute.
+ delta is  relative to the position of the object.
+ Several MoveBy actions can be concurrently called, and the resulting
+ movement will be the sum of individual movements.
+ */
+	public class MoveBy : ActionInterval
+	{
+		Vector3 startPosition;
+		Vector3 delta;
+		
+		public MoveBy(float duration ,Vector3 delta ):base(duration)
+		{
+			this.delta = delta;
+		}
+		
+		public  override void ProgressUpdate(float deltaTime)
+		{
+			target.position = ((startPosition + delta) * deltaTime );
+		}
+		
+		public override void StartWithTarget(Transform inTarget)
+		{
+			base.StartWithTarget(inTarget);
+			startPosition = inTarget.position;
+		}
+		
+	}
+
+
+
+
+	/** @class RotateTo
+ 	* @brief Rotates a Transform to a certain angle by modifying it's rotation attribute.
+ 	The direction will be decided by the shortest angle.
+	*/ 
+	public class  RotateTo :  ActionInterval
+	{
+		public RotateTo(float duration, Vector3 dstAngle3D):base(duration)
+		{
+			_is3D=true;
+			_dstAngle = Quaternion.Euler(dstAngle3D);
+
+		}
+
+
+		public  override void ProgressUpdate(float deltaTime)
+		{
+			target.rotation  = Quaternion.Lerp(_startRotation,_dstAngle,deltaTime);
+		}
+		
+		public override void StartWithTarget(Transform inTarget)
+		{
+			base.StartWithTarget(inTarget);
+			_startRotation = inTarget.rotation;
+			_diffAngle = _dstAngle * Quaternion.Inverse( _startRotation);
+		}
+
+
+
+
+		void RotateTocalculateAngles(ref float  startAngle,ref  float diffAngle, float dstAngle)
+		{
+			if (startAngle > 0)
+			{
+				startAngle = startAngle % 360.0f;
+			}
+			else
+			{
+				startAngle = startAngle % -360.0f;
+			}
+			
+			diffAngle = dstAngle - startAngle;
+			if (diffAngle > 180)
+			{
+				diffAngle -= 360;
+			}
+			if (diffAngle < -180)
+			{
+				diffAngle += 360;
+			}
+		}
+
+
+		
+		protected bool _is3D;
+		protected 	Quaternion _dstAngle;
+		protected  Quaternion _startRotation;
+		protected  Quaternion _diffAngle;
+		
+	
+	};
+
+
+
 }
