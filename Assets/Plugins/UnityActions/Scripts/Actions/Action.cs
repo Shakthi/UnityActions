@@ -60,6 +60,11 @@ namespace CC
 	public class FiniteTimeAction : Action
 	{
 		protected float duration;
+
+		public float GetDuration()
+		{
+			return duration;
+		}
 	}
 	
 }

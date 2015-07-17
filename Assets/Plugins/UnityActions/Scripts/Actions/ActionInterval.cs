@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 
 
@@ -39,6 +40,7 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 			
 			
 		}
+
 		
 		public override bool IsDone()
 		{
@@ -66,8 +68,122 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 
 
 	
+	/** @class Sequence
+ * @brief Runs actions sequentially, one after another.
+ */
+	class  Sequence :  ActionInterval
+	{
 	
-	
+		List<FiniteTimeAction> finiteTimeActions=new List<FiniteTimeAction>();
+
+
+		Sequence(params FiniteTimeAction[] list):base(1)
+		{
+			float totalduration = 0;
+			for (int i = 0; i < list.Length; i++)
+			{
+				finiteTimeActions.Add(list[i]);
+				totalduration += list[i].GetDuration();
+			}
+
+			duration = totalduration;
+		}
+
+
+
+#if aa
+
+		void Sequence::startWithTarget(Node *target)
+		{
+			ActionInterval::startWithTarget(target);
+			_split = _actions[0]->getDuration() / _duration;
+			_last = -1;
+		}
+		
+		void Sequence::stop(void)
+		{
+			// Issue #1305
+			if( _last != - 1)
+			{
+				_actions[_last]->stop();
+			}
+			
+			ActionInterval::stop();
+		}
+		
+		void Sequence::update(float t)
+		{
+			int found = 0;
+			float new_t = 0.0f;
+			
+			if( t < _split ) {
+				// action[0]
+				found = 0;
+				if( _split != 0 )
+					new_t = t / _split;
+				else
+					new_t = 1;
+				
+			} else {
+				// action[1]
+				found = 1;
+				if ( _split == 1 )
+					new_t = 1;
+				else
+					new_t = (t-_split) / (1 - _split );
+			}
+			
+			if ( found==1 ) {
+				
+				if( _last == -1 ) {
+					// action[0] was skipped, execute it.
+					_actions[0]->startWithTarget(_target);
+					_actions[0]->update(1.0f);
+					_actions[0]->stop();
+				}
+				else if( _last == 0 )
+				{
+					// switching to action 1. stop action 0.
+					_actions[0]->update(1.0f);
+					_actions[0]->stop();
+				}
+			}
+			else if(found==0 && _last==1 )
+			{
+				// Reverse mode ?
+				// FIXME: Bug. this case doesn't contemplate when _last==-1, found=0 and in "reverse mode"
+				// since it will require a hack to know if an action is on reverse mode or not.
+				// "step" should be overriden, and the "reverseMode" value propagated to inner Sequences.
+				_actions[1]->update(0);
+				_actions[1]->stop();
+			}
+			// Last action found and it is done.
+			if( found == _last && _actions[found]->isDone() )
+			{
+				return;
+			}
+			
+			// Last action found and it is done
+			if( found != _last )
+			{
+				_actions[found]->startWithTarget(_target);
+			}
+			
+			_actions[found]->update(new_t);
+			_last = found;
+		}
+		
+		Sequence* Sequence::reverse() const
+		{
+			return Sequence::createWithTwoActions(_actions[1]->reverse(), _actions[0]->reverse());
+		}
+
+		#endif
+
+
+	}
+
+
 	
 	/** @class MoveTo
  * @brief Moves a trasform to the position endposition
