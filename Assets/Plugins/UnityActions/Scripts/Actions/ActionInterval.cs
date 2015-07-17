@@ -23,11 +23,45 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 	{
 		float completedTime;
 		bool isFirstTick;
-
+		
 		public ActionInterval(float duration)
 		{
-			this.duration =duration;
+			completedTime = 0;
+			this.duration = duration;
+			isFirstTick = true;
+			if (duration == 0)
+			{
+				this.duration = epsilon;
+			}else
+			{
+				this.duration = duration;
+			}
+			
+			
 		}
+		
+		public override bool IsDone()
+		{
+			return (completedTime >= duration);
+		}
+		
+		public override void Update(float delta)
+		{
+			if(isFirstTick)
+			{
+				isFirstTick = false;
+				completedTime = 0;
+			}
+			else
+			{
+				completedTime += delta;
+			}
+			
+			LerpAction(Mathf.Max(0,Mathf.Min(1,completedTime / Mathf.Max(duration, epsilon))));
+		}
+
+
+
 	}
 
 
