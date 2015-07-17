@@ -9,7 +9,7 @@ public class TestActions : MonoBehaviour
 	void Start ()
 	{
 		Action.Run(movingObject,new MoveBy(10 ,new Vector3(10,1,1)));
-		Action.Run(movingObject,new RotateTo(5,new Vector3(90,0,0)));
+		Action.Run(movingObject,new RotateBy(5,new Vector3(10,0,0)));
 
 	}
 

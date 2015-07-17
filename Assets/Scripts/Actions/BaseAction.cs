@@ -141,7 +141,7 @@ namespace CC
 				completedTime += delta;
 			}
 
-			LerpAction(Mathf.Max(0,Mathf.Min(1,completedTime /duration)));
+			LerpAction(Mathf.Max(0,Mathf.Min(1,completedTime / Mathf.Max(duration, epsilon))));
 		}
 	}
 
@@ -193,7 +193,7 @@ namespace CC
 		
 		public  override void LerpAction(float deltaTime)
 		{
-			target.position = ((startPosition + delta) * deltaTime );
+			target.position = startPosition + delta * deltaTime ;
 		}
 		
 		public override void StartWithTarget(Transform inTarget)
@@ -215,7 +215,6 @@ namespace CC
 	{
 		public RotateTo(float duration, Vector3 dstAngle3D):base(duration)
 		{
-			_is3D=true;
 			_dstAngle = Quaternion.Euler(dstAngle3D);
 
 		}
@@ -236,36 +235,48 @@ namespace CC
 
 
 
-		void RotateTocalculateAngles(ref float  startAngle,ref  float diffAngle, float dstAngle)
-		{
-			if (startAngle > 0)
-			{
-				startAngle = startAngle % 360.0f;
-			}
-			else
-			{
-				startAngle = startAngle % -360.0f;
-			}
-			
-			diffAngle = dstAngle - startAngle;
-			if (diffAngle > 180)
-			{
-				diffAngle -= 360;
-			}
-			if (diffAngle < -180)
-			{
-				diffAngle += 360;
-			}
-		}
-
-
-		
-		protected bool _is3D;
 		protected 	Quaternion _dstAngle;
 		protected  Quaternion _startRotation;
 		protected  Quaternion _diffAngle;
 		
 	
+	};
+
+
+	
+/** @class RotateBy
+* @brief Rotates a Node object clockwise a number of degrees by modifying it's rotation attribute.
+*/
+
+	public class  RotateBy :  ActionInterval
+	{
+		public RotateBy(float duration, Vector3 deltaAngle3D):base(duration)
+		{
+			_diffAngle = Quaternion.Euler(deltaAngle3D);
+			
+		}
+		
+		
+		public  override void LerpAction(float deltaTime)
+		{
+			target.rotation  = Quaternion.Lerp(_startRotation,_dstAngle,deltaTime);
+		}
+		
+		public override void StartWithTarget(Transform inTarget)
+		{
+			base.StartWithTarget(inTarget);
+			_startRotation = inTarget.rotation;
+			_dstAngle = _diffAngle * _startRotation;
+		}
+		
+		
+		
+		
+		protected 	Quaternion _dstAngle;
+		protected  Quaternion _startRotation;
+		protected  Quaternion _diffAngle;
+		
+		
 	};
 
 
