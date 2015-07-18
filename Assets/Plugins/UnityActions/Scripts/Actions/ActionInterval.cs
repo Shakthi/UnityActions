@@ -18,7 +18,7 @@ These ActionInterval actions have some interesting properties, like:
 For example, you can simulate a Ping Pong effect running the action normally and
 then running it again in Reverse mode.
 Example:
-Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
+Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 */
 	public class ActionInterval : FiniteTimeAction
 	{
@@ -67,6 +67,16 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 	}
 
 
+
+	// Extra action for making a Sequence or Spawn when only adding one action to it.
+	class ExtraAction :  FiniteTimeAction
+	{
+		public ExtraAction()
+		{}
+	
+	};
+
+
 	
 	/** @class Sequence
  * @brief Runs actions sequentially, one after another.
@@ -74,44 +84,109 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 	class  Sequence :  ActionInterval
 	{
 	
-		List<FiniteTimeAction> finiteTimeActions=new List<FiniteTimeAction>();
 
 
-		Sequence(params FiniteTimeAction[] list):base(1)
+
+
+
+
+		int _last;
+		float _split;
+
+
+		FiniteTimeAction[ ] finiteTimeActions = new FiniteTimeAction[2];
+
+
+		//List<FiniteTimeAction> finiteTimeActions=new List<FiniteTimeAction>();
+
+
+		public Sequence(params FiniteTimeAction[] list):this(false,list)
 		{
-			float totalduration = 0;
-			for (int i = 0; i < list.Length; i++)
+
+		}
+
+
+		void AccumulateDuration()
+		{
+			duration= finiteTimeActions[0].GetDuration()+finiteTimeActions[1].GetDuration();
+
+		}
+
+		private Sequence( bool dummy,FiniteTimeAction[] list):base(1)
+		{
+			if(list.Length==0)
 			{
-				finiteTimeActions.Add(list[i]);
-				totalduration += list[i].GetDuration();
+				finiteTimeActions[0]= new ExtraAction();
+				finiteTimeActions[1]= new ExtraAction();
+				AccumulateDuration();
+			}
+			else if(list.Length==1)
+			{
+				finiteTimeActions[0]= list[0];
+				finiteTimeActions[1]= new ExtraAction();
+
+				AccumulateDuration();
+			}else if(list.Length==2)
+			{
+				finiteTimeActions[0]= list[0];
+				finiteTimeActions[1]= list[1];
+
+
+			}else
+			{// GREATER THAN 2
+
+
+
+				Sequence last = new Sequence (list[list.Length-2],list[list.Length-1]);
+
+				for(int i= list.Length-3;i>=1;i--)
+				{
+					last = new Sequence(list[i],last);
+				}
+
+
+				finiteTimeActions[0]= list[0];
+				finiteTimeActions[1]= last;
+
+				AccumulateDuration();
 			}
 
+
+
+	
+		}
+
+
+		public Sequence( FiniteTimeAction  action1,FiniteTimeAction  action2):base(1)
+		{
+			float totalduration = action1.GetDuration()+action2.GetDuration();
 			duration = totalduration;
+
+			finiteTimeActions[0]=action1;
+			finiteTimeActions[1]=action2;
 		}
 
 
 
-#if aa
-
-		void Sequence::startWithTarget(Node *target)
+		public override void Stop()
 		{
-			ActionInterval::startWithTarget(target);
-			_split = _actions[0]->getDuration() / _duration;
-			_last = -1;
-		}
-		
-		void Sequence::stop(void)
-		{
-			// Issue #1305
 			if( _last != - 1)
 			{
-				_actions[_last]->stop();
+				finiteTimeActions[_last].Stop();
 			}
-			
-			ActionInterval::stop();
+			base.Stop();
 		}
-		
-		void Sequence::update(float t)
+
+		public override void StartWithTarget(Transform inTarget)
+		{
+			base.StartWithTarget(inTarget);
+			
+			_split = finiteTimeActions[0].GetDuration()/ GetDuration();
+			_last = -1;
+		}
+
+
+		public override void LerpAction(float t)
 		{
 			int found = 0;
 			float new_t = 0.0f;
@@ -137,15 +212,15 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 				
 				if( _last == -1 ) {
 					// action[0] was skipped, execute it.
-					_actions[0]->startWithTarget(_target);
-					_actions[0]->update(1.0f);
-					_actions[0]->stop();
+					finiteTimeActions[0].StartWithTarget(target);
+					finiteTimeActions[0].LerpAction(1.0f);
+					finiteTimeActions[0].Stop();
 				}
 				else if( _last == 0 )
 				{
 					// switching to action 1. stop action 0.
-					_actions[0]->update(1.0f);
-					_actions[0]->stop();
+					finiteTimeActions[0].LerpAction(1.0f);
+					finiteTimeActions[0].Stop();
 				}
 			}
 			else if(found==0 && _last==1 )
@@ -154,11 +229,11 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 				// FIXME: Bug. this case doesn't contemplate when _last==-1, found=0 and in "reverse mode"
 				// since it will require a hack to know if an action is on reverse mode or not.
 				// "step" should be overriden, and the "reverseMode" value propagated to inner Sequences.
-				_actions[1]->update(0);
-				_actions[1]->stop();
+				finiteTimeActions[1].LerpAction(0);
+				finiteTimeActions[1].Stop();
 			}
 			// Last action found and it is done.
-			if( found == _last && _actions[found]->isDone() )
+			if( found == _last && finiteTimeActions[found].IsDone() )
 			{
 				return;
 			}
@@ -166,19 +241,19 @@ Action *pingPongAction = Sequence::actions(action, action->reverse(), nullptr);
 			// Last action found and it is done
 			if( found != _last )
 			{
-				_actions[found]->startWithTarget(_target);
+				finiteTimeActions[found].StartWithTarget(target);
 			}
 			
-			_actions[found]->update(new_t);
+			finiteTimeActions[found].LerpAction(new_t);
 			_last = found;
 		}
 		
-		Sequence* Sequence::reverse() const
-		{
-			return Sequence::createWithTwoActions(_actions[1]->reverse(), _actions[0]->reverse());
-		}
 
-		#endif
+
+
+
+		
+
 
 
 	}

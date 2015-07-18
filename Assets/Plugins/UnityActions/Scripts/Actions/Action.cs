@@ -36,7 +36,7 @@ namespace CC
 			isStarted = true;
 		}
 		
-		public void Stop()
+		public virtual void Stop()
 		{
 			target = null;
 		}
