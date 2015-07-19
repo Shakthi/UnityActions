@@ -169,7 +169,7 @@ Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 		}
 
 
-		public Sequence( FiniteTimeAction  action1,FiniteTimeAction  action2):base(1)
+		public Sequence( FiniteTimeAction  action1,FiniteTimeAction  action2)
 		{
 			float totalduration = action1.GetDuration()+action2.GetDuration();
 			duration = totalduration;
@@ -421,7 +421,156 @@ class  Repeat :  ActionInterval
 	};
 
 
+	/** @class DelayTime
+ * @brief Delays the action a certain amount of seconds.
+*/
+	public	class  DelayTime :  ActionInterval
+	{
+			/** 
+     * Creates the action.
+     * @param d Duration time, in seconds.
+     */
+		public DelayTime(float d):base(d)
+		{
+
+
+		}
+		
+		//
+		// Overrides
+		//
+		/**
+     * @param time In seconds.
+     */
+		public override void LerpAction(float time) 
+		{
+
+		}
+	};
+
+
+
+
+	/** @class Spawn
+ * @brief Spawn a new action immediately
+ */
+	public class  Spawn :  ActionInterval
+	{
+
+
+		public Spawn(params FiniteTimeAction[] arrayOfActions):this(false,arrayOfActions)
+		{
+
+		}
+
+
+
+		Spawn(bool dummy,FiniteTimeAction[] list)
+		{
+
+
+			if(list.Length<3)
+				Debug.LogError("Array length should greater than 2");
+
+				Spawn last = new Spawn (list[list.Length-2],list[list.Length-1]);
+			
+			for(int i= list.Length-3;i>=1;i--)
+			{
+				last = new Spawn(list[i],last);
+			}
+			
+			
+			_one= list[0];
+			_two= last;
+			
+			AccumulateDuration(_one,_two);
+
+
+
+	}
+
+		void AccumulateDuration (FiniteTimeAction action1, FiniteTimeAction action2)
+		{
+			float d1 = _one.GetDuration ();
+			float d2 = _two.GetDuration ();
+			duration = Mathf.Max (d1, d2);
+			if (d1 > d2) {
+				_two = new Sequence (action2, new DelayTime (d1 - d2));
+			}
+			else
+				if (d1 < d2) {
+					_one = new Sequence (action1, new DelayTime (d2 - d1));
+				}
+		}
+
+
+		public Spawn(FiniteTimeAction action1, FiniteTimeAction action2)
+		{
+			//CCASSERT(action1 != nullptr, "action1 can't be nullptr!");
+			//CCASSERT(action2 != nullptr, "action2 can't be nullptr!");
+			
+
+
+
+			_one = action1;
+			_two = action2;
+
+			AccumulateDuration (action1, action2);
+
+
+
+				
+
+		}
+
+
 	
+		//
+		// Overrides
+		//
+		public override void StartWithTarget(Transform target)
+		{
+			base.StartWithTarget(target);
+			_one.StartWithTarget(target);
+			_two.StartWithTarget(target);
+
+		}
+		public  override void Stop() 
+		{
+			_one.Stop();
+			_two.Stop();
+			base.Stop();
+
+
+		}
+		/**
+     * @param time In seconds.
+     */
+		public  override void LerpAction(float time)
+		{
+			if (_one !=null)
+			{
+				_one.LerpAction(time);
+			}
+			if (_two!=null)
+			{
+				_two.LerpAction(time);
+			}
+
+		}
+		
+	
+		protected FiniteTimeAction _one;
+		protected FiniteTimeAction _two;
+		
+
+	};
+
+
+
+
+
+
 	/** @class MoveTo
  * @brief Moves a trasform to the position endposition
 
@@ -451,31 +600,40 @@ class  Repeat :  ActionInterval
 	}
 	
 	
-	/** @class MoveBy
- * @brief Moves a trasform  by modifying it's position attribute.
+/** @class MoveBy
+ @brief Moves a trasform  by modifying it's position attribute.
  delta is  relative to the position of the object.
  Several MoveBy actions can be concurrently called, and the resulting
  movement will be the sum of individual movements.
  */
 	public class MoveBy : ActionInterval
 	{
-		Vector3 startPosition;
-		Vector3 delta;
+		Vector3 startPosition,_previousPosition;
+		Vector3 _positionDelta;
 		
 		public MoveBy(float duration ,Vector3 delta ):base(duration)
 		{
-			this.delta = delta;
+			 _positionDelta=delta;
 		}
 		
 		public  override void LerpAction(float deltaTime)
 		{
-			target.position = startPosition + delta * deltaTime ;
+			Vector3 currentPos = target.position;
+			Vector3 diff = currentPos - _previousPosition;
+			startPosition = startPosition + diff;
+			Vector3 newPos =  startPosition + (_positionDelta * deltaTime);
+			target.position = newPos;
+			_previousPosition = newPos;
+
+
+
+			//target.position = startPosition + delta * deltaTime ;
 		}
 		
 		public override void StartWithTarget(Transform inTarget)
 		{
 			base.StartWithTarget(inTarget);
-			startPosition = inTarget.position;
+			_previousPosition = startPosition = inTarget.position;
 		}
 		
 	}

@@ -12,6 +12,11 @@ public class TestActions : MonoBehaviour
 //		Action.Run(movingObject,new RotateBy(5,new Vector3(10,0,0)));
 //
 
+
+		Action.Run(movingObject,new Spawn(new MoveBy(10 ,new Vector3(10,1,1)),new MoveBy(10,new Vector3(0,30,0)),new RotateBy(10,new Vector3(0,180,0))));
+		//		Action.Run(movingObject,new RotateBy(5,new Vector3(10,0,0)));
+		//
+
 //		Sequence q= new Sequence(new MoveBy(3 ,new Vector3(10,1,1)),
 //		                                     new RotateBy(5,new Vector3(180,0,0)),
 //		            						 new MoveBy(3 ,new Vector3(-10,1,1)),
@@ -25,7 +30,7 @@ public class TestActions : MonoBehaviour
 
 
 
-		Action.Run(movingObject,new RepeatForever(new RotateBy(0.5f,new Vector3(10,0,0))));
+		//Action.Run(movingObject,new RepeatForever(new RotateBy(0.5f,new Vector3(10,0,0))));
 
 
 	}
