@@ -43,7 +43,7 @@ public class TestActions : MonoBehaviour
 
 
 
-		StartCoroutine(anANimtion);
+		StartCoroutine(anANimtion());
 
 	}
 
