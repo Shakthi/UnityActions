@@ -37,15 +37,15 @@ public class Actor  {
 
 	public IEnumerator MoveBy(float duraction,Vector3 diff)
 	{
-			Debug.Log("Comming here");
 
-			yield return RunAction(new CC.MoveBy(duraction,diff));
+
+
+			 return RunAction(new CC.MoveBy(duraction,diff));
 	}
 
 	public IEnumerator MoveTo(float duraction,Vector3 destination)
 	{
-			Debug.Log("Comming here");
-			yield return RunAction(new CC.MoveTo(duraction,destination));
+			 return RunAction(new CC.MoveTo(duraction,destination));
 	}
 
 
