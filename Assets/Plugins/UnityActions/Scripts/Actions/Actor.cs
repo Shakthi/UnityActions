@@ -5,10 +5,37 @@ using System.Collections;
 namespace CC
 {
 
+
+
+	public class Director:MonoBehaviour
+	{
+
+		public static Director Setup(Actor actor)
+		{
+			Director runner =  actor.transform.GetComponent<Director>();
+			if(runner == null)
+			{
+				runner = actor.transform.gameObject.AddComponent<Director>();
+			}
+
+			
+			return runner;
+		}
+
+	}
+
+
+
+
+
+
 public class Actor  {
 
-	 Transform transform;
-	 FiniteTimeAction action;
+
+
+
+	public Transform transform;
+	public  FiniteTimeAction action;
 
 	public Actor(Transform transform)
 	{
@@ -16,14 +43,20 @@ public class Actor  {
 	}
 	
 
-	public IEnumerator RunAction(FiniteTimeAction anAction)
-	{
+
+
+
+
+
+		
+		public IEnumerator YieldAction(FiniteTimeAction anAction)
+		{
 			if(action !=null)
 				Debug.LogError("An action is already running");
 			else
 			{
 				action = anAction;
-			
+				
 				Action.Run(transform,action);
 				yield return new WaitForSeconds(action.GetDuration());
 				while(!action.IsDone())
@@ -33,19 +66,21 @@ public class Actor  {
 				action=null;
 			}
 
+			
+		}
+
+
+
+	public Coroutine MoveBy(float duraction,Vector3 diff)
+	{
+			Director runner =Director.Setup(this);
+			return runner.StartCoroutine(YieldAction(new CC.MoveBy(duraction,diff)));
 	}
 
-	public IEnumerator MoveBy(float duraction,Vector3 diff)
+		public Coroutine MoveTo(float duraction,Vector3 destination)
 	{
-
-
-
-			 return RunAction(new CC.MoveBy(duraction,diff));
-	}
-
-	public IEnumerator MoveTo(float duraction,Vector3 destination)
-	{
-			 return RunAction(new CC.MoveTo(duraction,destination));
+			Director runner =Director.Setup(this);
+			return runner.StartCoroutine(YieldAction(new CC.MoveTo(duraction,destination)));
 	}
 
 

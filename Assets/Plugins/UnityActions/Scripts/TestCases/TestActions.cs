@@ -9,13 +9,11 @@ public class TestActions : MonoBehaviour
 
 	IEnumerator anANimtion()
 	{
-		var  anActor = new Actor(movingObject);
-		yield return StartCoroutine(anActor.MoveBy(3,new Vector3(10,10,10)));
+		  var  anActor = new Actor(movingObject);
+		 yield return anActor.MoveBy(3,new Vector3(10,10,10));
+		yield return anActor.MoveTo(4,new Vector3(0,0,0));
 
-		Debug.Log("y");
 
-		yield return StartCoroutine(anActor.MoveTo(4,new Vector3(0,0,0)));
-		Debug.Log("z");
 	}
 
 	void Start ()
