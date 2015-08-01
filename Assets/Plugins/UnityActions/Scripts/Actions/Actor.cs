@@ -70,18 +70,23 @@ public class Actor  {
 		}
 
 
-
-	public Coroutine MoveBy(float duraction,Vector3 diff)
-	{
+		public Coroutine PerformAction(FiniteTimeAction anAction)
+		{
 			Director runner =Director.Setup(this);
-			return runner.StartCoroutine(YieldAction(new CC.MoveBy(duraction,diff)));
-	}
+			return runner.StartCoroutine(YieldAction(anAction));
 
-		public Coroutine MoveTo(float duraction,Vector3 destination)
-	{
-			Director runner =Director.Setup(this);
-			return runner.StartCoroutine(YieldAction(new CC.MoveTo(duraction,destination)));
-	}
+		}
+
+		public Coroutine MoveBy(float aduration,Vector3 diff)
+		{
+			return PerformAction(new CC.MoveBy(aduration,diff));
+
+		}
+
+		public Coroutine MoveTo(float duraction,Vector3 targetPos)
+		{
+			return PerformAction(new CC.MoveTo(duraction,targetPos));
+		}
 
 
 }
