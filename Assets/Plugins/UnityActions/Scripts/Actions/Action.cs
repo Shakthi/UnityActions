@@ -4,7 +4,7 @@ namespace CC
 {
 
 
-	public class Action : BaseAction
+	public abstract class Action : BaseAction
 	{
 		protected Transform target;
 		bool isStarted;
@@ -21,14 +21,9 @@ namespace CC
 			ActionRunner.Setup(targetTransform,anAction);
 		}
 		
-		public virtual void LerpAction(float delta)
-		{
-		}
+		public abstract  void LerpAction(float delta);
 		
-		public virtual void Update(float delta)
-		{
-			
-		}
+		public abstract  void Update(float delta);
 		
 		public virtual void StartWithTarget(Transform inTarget)
 		{
@@ -45,6 +40,20 @@ namespace CC
 		{
 			return true;
 		}
+
+
+
+
+		
+		/** Returns a new action that performs the exactly the reverse action. 
+     *
+     * @return A new action that performs the exactly the reverse action.
+     */
+		public  abstract   Action Reverse() ;
+		
+
+		public  abstract   Action Clone(); 
+
 	}
 
 
@@ -57,7 +66,7 @@ namespace CC
  * Infinite time actions are valid.
  */
 
-	public class FiniteTimeAction : Action
+	public abstract class FiniteTimeAction : Action
 	{
 		protected float duration;
 
@@ -65,6 +74,16 @@ namespace CC
 		{
 			return duration;
 		}
+
+		public FiniteTimeAction(float  aduration)
+		{
+			duration = aduration;
+		}
+
+
+
+
+
 	}
 	
 }
