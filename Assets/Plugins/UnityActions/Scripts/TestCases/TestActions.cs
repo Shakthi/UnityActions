@@ -7,12 +7,17 @@ public class TestActions : MonoBehaviour
 	public  Transform movingObject;
 
 
-	IEnumerator anANimtion()
+	IEnumerator anAnimation()
 	{
-		  var  anActor = new Actor(movingObject);
-		 yield return anActor.MoveBy(3,new Vector3(10,10,10));
+		Actor  anActor = Actor.GetActor(movingObject);
+		yield return anActor.MoveBy(3,new Vector3(10,10,10));
+
+		Debug.Log("Now cube must be at the top of the screen");
+
+
 		yield return anActor.MoveTo(4,new Vector3(0,0,0));
 
+		Debug.Log("Both the action completed now must be completed at 4+3=7 seconds");
 
 	}
 
@@ -45,7 +50,7 @@ public class TestActions : MonoBehaviour
 
 
 
-		StartCoroutine(anANimtion());
+		StartCoroutine(anAnimation());
 
 	}
 

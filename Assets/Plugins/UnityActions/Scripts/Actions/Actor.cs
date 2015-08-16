@@ -7,42 +7,22 @@ namespace CC
 
 
 
-	public class Director:MonoBehaviour
-	{
+public class Actor:MonoBehaviour  {
 
-		public static Director Setup(Actor actor)
-		{
-			Director runner =  actor.transform.GetComponent<Director>();
-			if(runner == null)
-			{
-				runner = actor.transform.gameObject.AddComponent<Director>();
-			}
-
-			
-			return runner;
-		}
-
-	}
-
-
-
-
-
-
-public class Actor  {
-
-
-
-
-	public Transform transform;
 	public  FiniteTimeAction action;
 
-	public Actor(Transform transform)
-	{
-		this.transform=transform;
-	}
 	
+	
+	static public Actor GetActor(Transform intransform)
+	{
+			Actor actor =  intransform.GetComponent<Actor>();
+			if(actor == null)
+			{
+				actor = intransform.gameObject.AddComponent<Actor>();
+			}
 
+			return actor;
+	}
 
 
 
@@ -72,8 +52,7 @@ public class Actor  {
 
 		public Coroutine PerformAction(FiniteTimeAction anAction)
 		{
-			Director runner =Director.Setup(this);
-			return runner.StartCoroutine(YieldAction(anAction));
+			return StartCoroutine(YieldAction(anAction));
 
 		}
 
