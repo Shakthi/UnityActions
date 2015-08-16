@@ -36,7 +36,7 @@ IEnumerator anAnimation()
 
 	yield return anActor.MoveTo(4,new Vector3(0,0,0));
 
-	Debug.Log("Both the action completed now must be completed at 4+3=7 seconds");
+	Debug.Log("Both the action completed now. Must be completed at 4+3=7 seconds");
 }
 
 void Start()
@@ -50,7 +50,7 @@ There is a  lot of sugar in cocos2d in waiting to be ported to Unity3d! All cont
 ## Todos
 
  - Write Testcases
- - Port CCFiniteActions,...
+ - Port CCInstantActions,CCTransitions...
  - Add Code Comments
  - Add Night Mode
 
