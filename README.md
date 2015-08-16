@@ -47,17 +47,16 @@ void Start()
 Code  you see here is *actually* part of **Actor** testcase! Isn't it intutive, and as simple as writing a *screenwriting*.
 ## Contribution
 There is a  lot of sugar in cocos2d in waiting to be ported to Unity3d! All contribution are eagerly accepted.
-### Todos
+## Todos
 
  - Write Testcases
  - Port CCFiniteActions,...
  - Add Code Comments
  - Add Night Mode
 
-License
-----
+## License
 MIT
-
+---
 **Free Software, Hell Yeah!** -- hehe markdown porked from http://dillinger.io
 
 
