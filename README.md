@@ -44,7 +44,7 @@ void Start()
     StartCoroutine(anAnimation());
 }
 ```
-Code  you see here is *actually* part of **Actor** testcase! Isn't it intutive, and as simple as writing a *screenwriting*.
+Code  you see here is *actually* part of **Actor** testcase! Isn't it intutive, and as simple as *screenwriting*.
 ## Contribution
 There is a  lot of sugar in cocos2d in waiting to be ported to Unity3d! All contribution are eagerly accepted.
 ## Todos
