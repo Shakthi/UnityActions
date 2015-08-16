@@ -20,7 +20,7 @@ then running it again in Reverse mode.
 Example:
 Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 */
-	public class ActionInterval : FiniteTimeAction
+	public abstract class ActionInterval : FiniteTimeAction
 	{
 		float completedTime;
 		bool isFirstTick;
@@ -29,11 +29,11 @@ Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 		{
 			return completedTime;
 		}
-		protected ActionInterval()
+		protected ActionInterval():base(0)
 		{
 
 		}
-		public ActionInterval(float duration)
+		public ActionInterval(float duration):base(duration)
 		{
 			completedTime = 0;
 			this.duration = duration;
@@ -83,8 +83,28 @@ Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 	// Extra action for making a Sequence or Spawn when only adding one action to it.
 	class ExtraAction :  FiniteTimeAction
 	{
-		public ExtraAction()
+		public ExtraAction():base(0)
 		{}
+
+		 public override void LerpAction (float delta)
+		{
+
+		}
+
+		public override void Update (float delta)
+		{
+			
+		}
+
+		public override Action Reverse ()
+		{
+			return new ExtraAction();
+		}
+
+		public override Action Clone ()
+		{
+			return new ExtraAction();
+		}
 	
 	};
 
@@ -169,14 +189,7 @@ Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 		}
 
 
-		public Sequence( FiniteTimeAction  action1,FiniteTimeAction  action2)
-		{
-			float totalduration = action1.GetDuration()+action2.GetDuration();
-			duration = totalduration;
 
-			finiteTimeActions[0]=action1;
-			finiteTimeActions[1]=action2;
-		}
 
 
 
@@ -262,10 +275,28 @@ Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
 		
 
 
-
+		public Sequence( FiniteTimeAction  action1,FiniteTimeAction  action2)
+		{
+			float totalduration = action1.GetDuration()+action2.GetDuration();
+			duration = totalduration;
+			
+			finiteTimeActions[0]=action1;
+			finiteTimeActions[1]=action2;
+		}
 
 		
+		public override Action Reverse ()
+		{
+			FiniteTimeAction action1 = finiteTimeActions[1].Reverse() as FiniteTimeAction;
+			FiniteTimeAction action0 = finiteTimeActions[0].Reverse() as FiniteTimeAction ;
 
+			return new Sequence(action1,action0);
+		}
+
+		public override Action Clone ()
+		{
+			return  new Sequence(finiteTimeActions[0].Clone() as FiniteTimeAction,finiteTimeActions[1].Clone() as FiniteTimeAction);
+		}
 
 
 	}
@@ -359,7 +390,15 @@ class  Repeat :  ActionInterval
 			return _total == _times;
 		}
 
+		public override Action Reverse() 
+		{
+			return new Repeat(_innerAction.Reverse() as FiniteTimeAction, _times);
+		}
 
+		public override Action Clone() 
+		{
+			return new Repeat(_innerAction.Clone() as FiniteTimeAction, _times);
+		}
 
 
 
@@ -412,10 +451,21 @@ class  Repeat :  ActionInterval
 			return false;
 		}
 		
-//		RepeatForever Reverse() const
-//		{
-//			return RepeatForever::create(_innerAction->reverse());
-//		}
+		public override Action Reverse() 
+		{
+			return new RepeatForever(_innerAction.Reverse() as ActionInterval);
+		}
+
+
+		public override Action Clone() 
+		{
+			return new RepeatForever(_innerAction as ActionInterval);
+		}
+
+		public override void LerpAction (float delta)
+		{
+			throw new System.NotImplementedException ();
+		}
 		
 		//
 	};
@@ -435,7 +485,10 @@ class  Repeat :  ActionInterval
 
 
 		}
-		
+
+
+
+
 		//
 		// Overrides
 		//
@@ -445,7 +498,22 @@ class  Repeat :  ActionInterval
 		public override void LerpAction(float time) 
 		{
 
+
 		}
+
+
+
+		public override Action Reverse() 
+		{
+			return new DelayTime(duration);
+		}
+		
+		
+		public override Action Clone() 
+		{
+			return new DelayTime(duration);
+		}
+
 	};
 
 
@@ -562,7 +630,18 @@ class  Repeat :  ActionInterval
 	
 		protected FiniteTimeAction _one;
 		protected FiniteTimeAction _two;
-		
+
+
+		public override Action Clone() 
+		{
+			return new Spawn(_one.Clone() as FiniteTimeAction,_two.Clone() as FiniteTimeAction);
+		}
+
+		public override Action Reverse() 
+		{
+			return new Spawn(_one.Reverse() as FiniteTimeAction ,_two.Reverse() as FiniteTimeAction );
+		}
+
 
 	};
 
@@ -584,7 +663,18 @@ class  Repeat :  ActionInterval
 		{
 			this.endPosition = endPosition;
 		}
-		
+
+		public override Action Reverse ()
+		{
+			throw new System.NotImplementedException ();
+		}
+
+
+		public override Action Clone ()
+		{
+			return new MoveTo(duration,endPosition);
+		}
+
 		public  override void LerpAction(float deltaTime)
 		{
 			target.position = Vector3.Lerp(startPosition,endPosition,deltaTime);
@@ -635,6 +725,18 @@ class  Repeat :  ActionInterval
 			base.StartWithTarget(inTarget);
 			_previousPosition = startPosition = inTarget.position;
 		}
+
+		public override Action Reverse ()
+		{
+			return new MoveBy(duration,-_positionDelta);
+		}
+		
+		
+		public override Action Clone ()
+		{
+			return new MoveBy(duration,_positionDelta);
+		}
+
 		
 	}
 	
@@ -652,6 +754,12 @@ class  Repeat :  ActionInterval
 			_dstAngle = Quaternion.Euler(dstAngle3D);
 			
 		}
+
+		public RotateTo(float duration, Quaternion deltaAngle3D):base(duration)
+		{
+			_diffAngle = deltaAngle3D;
+			
+		}
 		
 		
 		public  override void LerpAction(float deltaTime)
@@ -667,7 +775,16 @@ class  Repeat :  ActionInterval
 		}
 		
 		
-		
+		public override Action Reverse ()
+		{
+			throw new System.NotImplementedException ();
+		}
+
+		public override Action Clone ()
+		{
+			return new RotateTo(duration,_dstAngle);
+		}
+
 		
 		protected 	Quaternion _dstAngle;
 		protected  Quaternion _startRotation;
@@ -689,6 +806,12 @@ class  Repeat :  ActionInterval
 			_diffAngle = Quaternion.Euler(deltaAngle3D);
 			
 		}
+
+		public RotateBy(float duration, Quaternion deltaAngle3D):base(duration)
+		{
+			_diffAngle = deltaAngle3D;
+			
+		}
 		
 		
 		public  override void LerpAction(float deltaTime)
@@ -703,7 +826,15 @@ class  Repeat :  ActionInterval
 			_dstAngle = _diffAngle * _startRotation;
 		}
 		
+		public override Action Reverse ()
+		{
+			return new RotateTo(duration,Quaternion.Inverse( _diffAngle));
+		}
 		
+		public override Action Clone ()
+		{
+			return new RotateTo(duration,_diffAngle);
+		}
 		
 		
 		protected 	Quaternion _dstAngle;
@@ -712,8 +843,93 @@ class  Repeat :  ActionInterval
 		
 		
 	};
+
+
+
+
+	public class  JumpBy :  ActionInterval
+	{
 	
+			/** 
+     * Creates the action.
+     * @param duration Duration time, in seconds.
+     * @param position The jumping distance.
+     * @param height The jumping height.
+     * @param jumps The jumping times.
+     * 
+     */
+		public	JumpBy(float aduration,  Vector3  position, float height, int jumps):base(aduration)
+		{
+			_delta = position;
+			_height = height;
+			_jumps = jumps;
+
+		}
+		
+		//
+		// Overrides
+		//
+		public override Action Clone ()
+		{
+			return new JumpBy(duration,_delta,_height,_jumps);
+		}
+
+
+
+		public override Action Reverse ()
+		{
+			return new JumpBy(duration,-_delta,_height,_jumps);
+		}
+		public override void StartWithTarget(Transform aTransform) 
+		{
+			base.StartWithTarget(aTransform);
+			_previousPos = _startPosition = aTransform.position;
+
+		}
+		/**
+     * @param time In seconds.
+     */
+		public override void LerpAction(float t) 
+		{
+			//TODO: Implement 3d jump
+			// parabolic jump (since v0.8.2)
+			if (target)
+			{
+				float frac = (t * _jumps)% 1.0f ;
+				float y = _height * 4 * frac * (1 - frac);
+				y += _delta.y * t;
+				float x = _delta.x * t;
+				//#if CC_ENABLE_STACKABLE_ACTIONS
+				Vector3 currentPos = target.position;
+				Vector3 diff = currentPos - _previousPos;
+				_startPosition = diff + _startPosition;
+				Vector3 newPos = _startPosition + new Vector3(x,y,0);
+				target.position= newPos;
+				_previousPos = newPos;
+//				#else
+//				_target->setPosition(_startPosition + Vec2(x,y));
+//				#endif // !CC_ENABLE_STACKABLE_ACTIONS
+			}
+		}
+		
+
 	
+	protected	Vector3           _startPosition;
+		protected	Vector3           _delta;
+		protected float           _height;
+		protected int             _jumps;
+		protected Vector3           _previousPos;
+		
+	};
+
+
+
+
+
+
+
+	
+
 
 
 
