@@ -52,7 +52,7 @@ There is a  lot of sugar in cocos2d in waiting to be ported to Unity3d! All cont
  - Write Testcases
  - Port CCInstantActions,CCTransitions...
  - Add Code Comments
- - Add Night Mode
+
 
 ## License
 Apache License
