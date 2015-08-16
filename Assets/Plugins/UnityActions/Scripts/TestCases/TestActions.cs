@@ -21,41 +21,68 @@ public class TestActions : MonoBehaviour
 
 	}
 
+
+	IEnumerator ShowDemo()
+	{
+		yield return StartCoroutine(anAnimation());
+
+		Debug.Log("Actor demo done. Now exicuting two actions parallely ");
+
+		Action.Run(movingObject,new MoveBy(10 ,new Vector3(10,1,1)));
+		Action.Run(movingObject,new RotateBy(5,new Vector3(180,0,0)));
+
+		yield return new WaitForSeconds(11);
+
+
+
+		Debug.Log(" Now exicuting sequence and repeat-2 actions  ");
+		ResetMovingObject();
+		Sequence q= new Sequence(new MoveBy(3 ,new Vector3(3,1,1)),
+ 		                                     new RotateBy(5,new Vector3(180,0,0)),
+ 		            						 new MoveBy(3 ,new Vector3(-3,1,1)),
+ 		           								new RotateBy(3,new Vector3(0,60,0))
+ 
+ 		                         );
+ 		Action.Run(movingObject, new Repeat(q,2));
+		yield return new WaitForSeconds(30);
+
+
+
+
+
+		Debug.Log(" Now exicuting Spawn actions  ");
+		ResetMovingObject();
+		Action.Run(movingObject,new Spawn(new MoveBy(10 ,new Vector3(2,1,1)),new MoveBy(10,new Vector3(0,3,0)),new RotateBy(10,new Vector3(0,180,0))));
+		yield return new WaitForSeconds(10);
+
+
+		Debug.Log(" All tests are completed ");
+
+
+
+	}
+
+	Vector3 originalPosition;
+	Quaternion originalRotation;
+	Vector3 originalScale;
+
+	void ResetMovingObject()
+	{
+		movingObject.position=originalPosition;
+		movingObject.rotation=originalRotation;
+		movingObject.localScale=originalScale;
+	}
+
+
 	void Start ()
 	{
-//		Action.Run(movingObject,new MoveBy(10 ,new Vector3(10,1,1)));
-//		Action.Run(movingObject,new RotateBy(5,new Vector3(10,0,0)));
-//
 
+		originalPosition=movingObject.position;
+		originalRotation=movingObject.rotation;
+		originalScale=movingObject.localScale;
 
-//		Action.Run(movingObject,new Spawn(new MoveBy(10 ,new Vector3(10,1,1)),new MoveBy(10,new Vector3(0,30,0)),new RotateBy(10,new Vector3(0,180,0))));
-//		//		Action.Run(movingObject,new RotateBy(5,new Vector3(10,0,0)));
-//		//
-
-//		Sequence q= new Sequence(new MoveBy(3 ,new Vector3(10,1,1)),
-//		                                     new RotateBy(5,new Vector3(180,0,0)),
-//		            						 new MoveBy(3 ,new Vector3(-10,1,1)),
-//		           								new RotateBy(3,new Vector3(0,60,0))
-//
-//		                         );
-//		           
-//
-//
-//		Action.Run(movingObject, new Repeat(q,2));
-
-
-
-		//Action.Run(movingObject,new RepeatForever(new RotateBy(0.5f,new Vector3(10,0,0))));
-
-
-
-
-		StartCoroutine(anAnimation());
+		StartCoroutine(ShowDemo());
 
 	}
 
-	void Update ()
-	{
-
-	}
 }
