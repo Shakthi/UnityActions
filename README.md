@@ -8,7 +8,7 @@ With actions, making an animation may not be simpler than this.
 ```c#
 Action.Run(aTransform,new MoveBy(10 ,new Vector3(10,1,1)));
 ```
-Above code move transforms 'aTransform' by Vector3(10,1,1) in 10 seconds. Now this is basic one, more complex example follows.
+Above code move/transforms 'aTransform' by Vector3(10,1,1) units in 10 seconds. Now this is basic one, more complex example follows.
 ```c#
   Sequence seq= new Sequence(new MoveBy(3 ,new Vector3(10,1,1)),
 								new RotateBy(5,new Vector3(180,0,0)),
@@ -55,7 +55,7 @@ There is a  lot of sugar in cocos2d in waiting to be ported to Unity3d! All cont
  - Add Night Mode
 
 ## License
-MIT
+Apache License
 ---
 **Free Software, Hell Yeah!** -- hehe markdown porked from http://dillinger.io
 
