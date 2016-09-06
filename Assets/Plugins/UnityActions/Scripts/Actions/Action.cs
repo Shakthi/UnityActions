@@ -2,8 +2,6 @@
 
 namespace CC
 {
-
-
 	public abstract class Action : BaseAction
 	{
 		protected Transform target;
@@ -39,13 +37,8 @@ namespace CC
 		public virtual bool IsDone()
 		{
 			return true;
-		}
-
-
-
-
-		
-		/** Returns a new action that performs the exactly the reverse action. 
+		}	
+    /** Returns a new action that performs the exactly the reverse action. 
      *
      * @return A new action that performs the exactly the reverse action.
      */
@@ -54,37 +47,5 @@ namespace CC
 
 		public  abstract   Action Clone(); 
 
-	}
-
-
-	/** @class FiniteTimeAction
- * @brief
- * Base class actions that do have a finite time duration.
- * Possible actions:
- * - An action with a duration of 0 seconds.
- * - An action with a duration of 35.5 seconds.
- * Infinite time actions are valid.
- */
-
-	public abstract class FiniteTimeAction : Action
-	{
-		protected float duration;
-
-		public float GetDuration()
-		{
-			return duration;
-		}
-
-		public FiniteTimeAction(float  aduration)
-		{
-			duration = aduration;
-		}
-
-
-
-
-
-	}
-	
+	}	
 }
-

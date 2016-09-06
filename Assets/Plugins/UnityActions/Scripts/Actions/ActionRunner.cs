@@ -8,11 +8,6 @@ namespace CC
 
 	class ActionRunner:MonoBehaviour
 	{
-
-
-
-
-
 		public List<Action> actionsToRun;
 		
 		void Update()
@@ -34,20 +29,13 @@ namespace CC
 				{
 					currentAction.Stop();
 					actionsToRun.RemoveAt(i);
-					i--;
-					
-				}
-				
+					i--;	
+				}				
 			}
-			
 			if(actionsToRun.Count==0)
-				Destroy(this);
-			
-			
+				Destroy(this);			
 		}
-
-
-
+        
 		public static void Setup(Transform inTarget,Action anAction)
 		{
 			ActionRunner runner =  inTarget.GetComponent<ActionRunner>();
@@ -57,17 +45,6 @@ namespace CC
 				runner.actionsToRun = new List<Action>();
 			}
 			runner.actionsToRun.Add(anAction);
-
-			
-			
 		}
-
-
 	}
-
-
-
-
-	
-	
 }
