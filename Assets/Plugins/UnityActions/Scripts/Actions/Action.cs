@@ -7,7 +7,6 @@ namespace CC
 		protected Transform target;
 		bool isStarted;
 		
-		
 		public bool IsStarted()
 		{
 			return isStarted;
@@ -44,7 +43,6 @@ namespace CC
      */
 		public  abstract   Action Reverse() ;
 		
-
 		public  abstract   Action Clone(); 
 
 	}	

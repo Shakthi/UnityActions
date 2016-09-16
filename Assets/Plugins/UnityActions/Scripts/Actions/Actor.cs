@@ -6,7 +6,6 @@ namespace CC
 {
     public class Actor : MonoBehaviour
     {
-
         public FiniteTimeAction action;
 
         static public Actor GetActor(Transform intransform)
@@ -16,7 +15,6 @@ namespace CC
             {
                 actor = intransform.gameObject.AddComponent<Actor>();
             }
-
             return actor;
         }
 
@@ -41,13 +39,11 @@ namespace CC
         public Coroutine PerformAction(FiniteTimeAction anAction)
         {
             return StartCoroutine(YieldAction(anAction));
-
         }
 
         public Coroutine MoveBy(float aduration, Vector3 diff)
         {
             return PerformAction(new CC.MoveBy(aduration, diff));
-
         }
 
         public Coroutine MoveTo(float duraction, Vector3 targetPos)
@@ -55,6 +51,14 @@ namespace CC
             return PerformAction(new CC.MoveTo(duraction, targetPos));
         }
 
+        public Coroutine UIFadeIn(float duration)
+        {
+            return PerformAction(new UIFadeOut(duration));
+        }
 
+        public Coroutine UIFadeOut(float duration)
+        {
+            return PerformAction(new UIFadeOut(duration));
+        }
     }
 }
