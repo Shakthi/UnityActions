@@ -45,7 +45,8 @@ Action *pingPongAction = Sequence::actions(action, action.reverse(), nullptr);
         }
         public override bool IsDone()
         {
-            return (completedTime >= duration);
+            base.IsDone();
+            return completedTime >= duration;
         }
 
         public override void Update(float delta)

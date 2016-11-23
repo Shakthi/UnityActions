@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 
+
 namespace CC
 {
     /// <summary>
@@ -16,7 +17,9 @@ namespace CC
         private float startAlpha = 1.0f;
         private float endAlpha = 0.0f;
         private CanvasRenderer canvasRenderer;
+        private CanvasGroup canvasGroup;
         private bool setParentEnableAfterComplete;
+        private UISettings.UISetup UIMode;
 
         /// <summary>
         /// The class constructor. </summary>
@@ -35,29 +38,46 @@ namespace CC
             return null;
         }
 
-        public override void LerpAction(float delta)
+        public override void Stop()
         {
-            canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
+            if(setParentEnableAfterComplete)
+            {
+                target.gameObject.SetActive(setParentEnableAfterComplete);
+            }
+            base.Stop();
         }
 
-        public override bool IsDone()
+        public override void LerpAction(float delta)
         {
-            /*canvasGroup.alpha = endAlpha;
-            Component.Destroy(target.GetComponent<Actor>());
-            if (base.IsDone() && !setParentEnableAfterComplete)
-                target.gameObject.SetActive(false);*/
-            Debug.Log("Completed Action");
-            return base.IsDone();
+            if (UIMode == UISettings.UISetup.canvasRenderer)
+            {
+                canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
+            }
+            else if (UIMode == UISettings.UISetup.canvasGroup)
+            {
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, delta);
+            }
         }
 
         public override void StartWithTarget(Transform inTarget)
         {
             base.StartWithTarget(inTarget);
-            if (inTarget.gameObject.GetComponent<CanvasRenderer>() == null)
+            if (inTarget.GetComponent<CanvasRenderer>() != null)
             {
-                Debug.LogError("This actions shoubd be used only in UI elements");
+                UIMode = UISettings.UISetup.canvasRenderer;
+                canvasRenderer = inTarget.GetComponent<CanvasRenderer>();
+                canvasRenderer.SetAlpha(1.0f);
             }
-            canvasRenderer = inTarget.gameObject.GetComponent<CanvasRenderer>();
+            else if (inTarget.GetComponent<CanvasGroup>() != null)
+            {
+                UIMode = UISettings.UISetup.canvasGroup;
+                canvasGroup = inTarget.GetComponent<CanvasGroup>();
+                canvasGroup.alpha = 1.0f;
+            }
+            else
+            {
+                Debug.LogError("This object doesn't have CanvasRenderer or CanvasGroup");
+            }
         }
     }
 }
