@@ -13,7 +13,7 @@ namespace CC
         private float startAlpha = 0.0f;
         private float endAlpha = 1.0f;
         private bool setEnableParentAfterCompleted;
-        private CanvasGroup canvasGroup;
+        private CanvasRenderer canvasRenderer;
 
         //By default this will be 1 second
         public UIFadeIn(float duration = 1.0f, bool setEnableAfterCompleted = true) : base(duration)
@@ -33,12 +33,12 @@ namespace CC
 
         public override void LerpAction(float delta)
         {
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, delta);
+            canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
         }
 
         public override bool IsDone()
         {
-            canvasGroup.alpha = endAlpha;
+            canvasRenderer.SetAlpha(endAlpha);
             Component.Destroy(target.GetComponent<Actor>());
             return base.IsDone();
         }
@@ -46,20 +46,12 @@ namespace CC
         public override void StartWithTarget(Transform inTarget)
         {
             base.StartWithTarget(inTarget);
-            if (inTarget.gameObject.GetComponent<CanvasGroup>() == null)
+            if (inTarget.gameObject.GetComponent<CanvasRenderer>() == null)
             {
-                CanvasGroup g = createCanvasGroup(inTarget.gameObject, 0.0f);
+                Debug.LogError("This Action only works in UI elements");
             }
-            canvasGroup = inTarget.gameObject.GetComponent<CanvasGroup>();
-            //canvasGroup.alpha = 0.0f;
+            canvasRenderer = inTarget.gameObject.GetComponent<CanvasRenderer>();
+            canvasRenderer.SetAlpha(0.0f);
         }
-
-        public static CanvasGroup createCanvasGroup(GameObject where, float initialAlpha)
-        {
-            CanvasGroup canvasG = where.AddComponent<CanvasGroup>();
-            canvasG.alpha = initialAlpha;
-            return canvasG;
-        }
-
     }
 }

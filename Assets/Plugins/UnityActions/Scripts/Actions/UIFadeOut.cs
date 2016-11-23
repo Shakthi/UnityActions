@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 
@@ -14,7 +15,7 @@ namespace CC
     {
         private float startAlpha = 1.0f;
         private float endAlpha = 0.0f;
-        private CanvasGroup canvasGroup;
+        private CanvasRenderer canvasRenderer;
         private bool setParentEnableAfterComplete;
 
         /// <summary>
@@ -36,28 +37,27 @@ namespace CC
 
         public override void LerpAction(float delta)
         {
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, delta);
+            canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
         }
 
         public override bool IsDone()
         {
-            canvasGroup.alpha = endAlpha;
+            /*canvasGroup.alpha = endAlpha;
             Component.Destroy(target.GetComponent<Actor>());
             if (base.IsDone() && !setParentEnableAfterComplete)
-                target.gameObject.SetActive(false);
-            //Debug.Log("Completed Action");
+                target.gameObject.SetActive(false);*/
+            Debug.Log("Completed Action");
             return base.IsDone();
         }
 
         public override void StartWithTarget(Transform inTarget)
         {
             base.StartWithTarget(inTarget);
-            if (inTarget.gameObject.GetComponent<CanvasGroup>() == null)
+            if (inTarget.gameObject.GetComponent<CanvasRenderer>() == null)
             {
-                inTarget.gameObject.AddComponent<CanvasGroup>();
+                Debug.LogError("This actions shoubd be used only in UI elements");
             }
-            canvasGroup = inTarget.gameObject.GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 1.0f;
+            canvasRenderer = inTarget.gameObject.GetComponent<CanvasRenderer>();
         }
     }
 }

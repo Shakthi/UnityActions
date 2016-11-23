@@ -6,7 +6,7 @@ using System.Collections;
  */
 namespace CC
 {
-    class Sequence : ActionInterval
+    public class Sequence : ActionInterval
     {
         int _last;
         float _split;
