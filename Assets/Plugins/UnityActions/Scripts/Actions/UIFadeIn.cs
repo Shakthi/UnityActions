@@ -56,6 +56,7 @@ namespace CC
 
         public override void StartWithTarget(Transform inTarget)
         {
+            base.StartWithTarget(inTarget);
             if (inTarget.GetComponent<CanvasRenderer>() != null)
             {
                 UIMode = UISetup.canvasRenderer;
