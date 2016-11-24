@@ -15,7 +15,7 @@ namespace CC
         private bool setParentEnableAfterComplete;
         private CanvasRenderer canvasRenderer;
         private CanvasGroup canvasGroup;
-        private UISettings.UISetup UIMode;
+        private UISetup UIMode;
 
         //By default this will be 1 second
         public UIFadeIn(float duration = 1.0f, bool setEnableAfterCompleted = true) : base(duration)
@@ -44,11 +44,11 @@ namespace CC
 
         public override void LerpAction(float delta)
         {
-            if (UIMode == UISettings.UISetup.canvasRenderer)
+            if (UIMode == UISetup.canvasRenderer)
             {
                 canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
             }
-            else if (UIMode == UISettings.UISetup.canvasGroup)
+            else if (UIMode == UISetup.canvasGroup)
             {
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, delta);
             }
@@ -58,13 +58,13 @@ namespace CC
         {
             if (inTarget.GetComponent<CanvasRenderer>() != null)
             {
-                UIMode = UISettings.UISetup.canvasRenderer;
+                UIMode = UISetup.canvasRenderer;
                 canvasRenderer = inTarget.GetComponent<CanvasRenderer>();
                 canvasRenderer.SetAlpha(0.0f);
             }
             else if (inTarget.GetComponent<CanvasGroup>() != null)
             {
-                UIMode = UISettings.UISetup.canvasGroup;
+                UIMode = UISetup.canvasGroup;
                 canvasGroup = inTarget.GetComponent<CanvasGroup>();
                 canvasGroup.alpha = 0.0f;
             }

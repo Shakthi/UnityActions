@@ -10,8 +10,8 @@ public class TestUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Sequence q = new Sequence(new UIFadeOut() );
-        Action.Run(textTest, q);
+        Sequence q = new Sequence(new UIFadeTo(0.8f,0.5f),new UIFadeTo(0.5f,1.0f) );
+        Action.Run(textTest,new RepeatForever (q) );
 
         //Actor anActor = Actor.GetActor(textTest);
         //anActor.UIFadeOut(1.0f);

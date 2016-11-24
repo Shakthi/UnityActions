@@ -3,13 +3,10 @@ using System.Collections;
 
 namespace CC
 {
-    public class UISettings
+    public enum UISetup
     {
-        public enum UISetup
-        {
-            noUIObject = 0,
-            canvasRenderer = 1,
-            canvasGroup = 2
-        }
+        noUIObject = 0,
+        canvasRenderer = 1,
+        canvasGroup = 2
     }
 }

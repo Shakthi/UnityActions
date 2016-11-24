@@ -9,6 +9,8 @@ namespace CC
         private float startAlpha;
         private float endAlpha;
         private CanvasRenderer canvasRenderer;
+        private CanvasGroup canvasGroup;
+        private UISetup UIMode;
 
         public UIFadeTo(float duration = 1.0f, float alphaEndp = 0.5f) : base(duration)
         {
@@ -27,28 +29,35 @@ namespace CC
 
         public override void LerpAction(float delta)
         {
-            canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
+            if (UIMode == UISetup.canvasRenderer)
+            {
+                canvasRenderer.SetAlpha(Mathf.Lerp(startAlpha, endAlpha, delta));
+            }
+            else if (UIMode == UISetup.canvasGroup)
+            {
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, delta);
+            }
         }
 
-        public override bool IsDone()
-        {
-            if (base.IsDone())
-            {
-                Component.Destroy(target.GetComponent<Actor>());
-                return base.IsDone();
-            }
-            return base.IsDone();
-        }
         public override void StartWithTarget(Transform inTarget)
         {
             base.StartWithTarget(inTarget);
-            if (inTarget.gameObject.GetComponent<CanvasRenderer>() == null)
+            if (inTarget.GetComponent<CanvasRenderer>() != null)
             {
-                Debug.LogError("This Action should be applied only to UI elements");
+                UIMode = UISetup.canvasRenderer;
+                canvasRenderer = inTarget.GetComponent<CanvasRenderer>();
+                startAlpha = canvasRenderer.GetAlpha();
             }
-            canvasRenderer = inTarget.gameObject.GetComponent<CanvasRenderer>();
-            startAlpha = canvasRenderer.GetAlpha();
+            else if (inTarget.GetComponent<CanvasGroup>() != null)
+            {
+                UIMode = UISetup.canvasGroup;
+                canvasGroup = inTarget.GetComponent<CanvasGroup>();
+                startAlpha = canvasGroup.alpha;
+            }
+            else
+            {
+                Debug.LogError("This object doesn't have CanvasRenderer or CanvasGroup");
+            }
         }
     }
 }
-

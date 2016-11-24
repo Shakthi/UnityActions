@@ -9,7 +9,7 @@ using System.Collections;
  */
 namespace CC
 {
-    class RepeatForever : ActionInterval
+    public class RepeatForever : ActionInterval
     {
         /** Inner action */
         protected ActionInterval _innerAction;
