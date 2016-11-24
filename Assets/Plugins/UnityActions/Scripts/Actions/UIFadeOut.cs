@@ -40,9 +40,9 @@ namespace CC
 
         public override void Stop()
         {
-            if(setParentEnableAfterComplete)
+            if(!setParentEnableAfterComplete)
             {
-                target.gameObject.SetActive(setParentEnableAfterComplete);
+                target.gameObject.SetActive(false);
             }
             base.Stop();
         }

@@ -58,7 +58,7 @@ namespace CC
 
         public Coroutine UIFadeOut(float duration, bool setEnableAfterComplete = true)
         {
-            return PerformAction(new UIFadeOut(duration));
+            return PerformAction(new UIFadeOut(duration, setEnableAfterComplete));
         }
     }
 }
