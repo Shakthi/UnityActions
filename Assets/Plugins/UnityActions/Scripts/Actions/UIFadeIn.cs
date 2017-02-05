@@ -12,15 +12,14 @@ namespace CC
     {
         private float startAlpha = 0.0f;
         private float endAlpha = 1.0f;
-        private bool setParentEnableAfterComplete;
         private CanvasRenderer canvasRenderer;
         private CanvasGroup canvasGroup;
         private UISetup UIMode;
 
         //By default this will be 1 second
-        public UIFadeIn(float duration = 1.0f, bool setEnableAfterCompleted = true) : base(duration)
+        public UIFadeIn(float duration = 1.0f) : base(duration)
         {
-            this.setParentEnableAfterComplete = setEnableAfterCompleted;
+
         }
 
         public override Action Reverse()
@@ -31,15 +30,6 @@ namespace CC
         public override Action Clone()
         {
             return null;
-        }
-
-        public override void Stop()
-        {
-            if (setParentEnableAfterComplete)
-            {
-                target.gameObject.SetActive(setParentEnableAfterComplete);
-            }
-            base.Stop();
         }
 
         public override void LerpAction(float delta)

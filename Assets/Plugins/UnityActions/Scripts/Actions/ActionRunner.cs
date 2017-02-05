@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CC
 {
 
-    class ActionRunner : MonoBehaviour
+    public class ActionRunner : MonoBehaviour
     {
         public List<Action> actionsToRun;
 

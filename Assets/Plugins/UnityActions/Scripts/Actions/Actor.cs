@@ -4,6 +4,9 @@ using System.Collections;
 
 namespace CC
 {
+    /// <summary>
+    /// TODO Write the Docs 
+    /// </summary>
     public class Actor : MonoBehaviour
     {
         public FiniteTimeAction action;
@@ -56,9 +59,20 @@ namespace CC
             return PerformAction(new UIFadeIn(duration));
         }
 
-        public Coroutine UIFadeOut(float duration, bool setEnableAfterComplete = true)
+        public Coroutine UIFadeOut(float duration)
         {
-            return PerformAction(new UIFadeOut(duration, setEnableAfterComplete));
+            return PerformAction(new UIFadeOut(duration));
+        }
+
+        public Coroutine customCallback(float duration, System.Action action)
+        {
+            return StartCoroutine(waitThenCallback(0.0f, action));
+        }
+
+        private IEnumerator waitThenCallback(float time, System.Action callback)
+        {
+            yield return new WaitForSeconds(time);
+            callback();
         }
     }
 }

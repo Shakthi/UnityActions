@@ -18,14 +18,13 @@ namespace CC
         private float endAlpha = 0.0f;
         private CanvasRenderer canvasRenderer;
         private CanvasGroup canvasGroup;
-        private bool setParentEnableAfterComplete;
         private UISetup UIMode;
 
         /// <summary>
         /// The class constructor. </summary>
-        public UIFadeOut(float duration = 1.0f, bool setEnableAfterCompleted = true) : base(duration)
+        public UIFadeOut(float duration = 1.0f) : base(duration)
         {
-            setParentEnableAfterComplete = setEnableAfterCompleted;
+
         }
 
         public override Action Reverse()
@@ -36,15 +35,6 @@ namespace CC
         public override Action Clone()
         {
             return null;
-        }
-
-        public override void Stop()
-        {
-            if(!setParentEnableAfterComplete)
-            {
-                target.gameObject.SetActive(false);
-            }
-            base.Stop();
         }
 
         public override void LerpAction(float delta)
