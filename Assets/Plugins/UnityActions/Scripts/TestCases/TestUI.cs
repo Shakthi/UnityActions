@@ -10,7 +10,10 @@ public class TestUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Sequence q = new Sequence(new UIFadeTo(0.8f,0.5f),new UIFadeTo(0.5f,1.0f) );
+        Sequence q = new Sequence(new UIFadeTo(0.8f, 0.5f), new UIFadeTo(0.5f, 1.0f), new CallFunc(() => 
+        {
+            Debug.Log("Instant Action should be working");
+        } ) );
         Action.Run(textTest,new RepeatForever (q) );
 
         //Actor anActor = Actor.GetActor(textTest);
