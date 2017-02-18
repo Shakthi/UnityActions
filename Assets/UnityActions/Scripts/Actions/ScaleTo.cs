@@ -5,7 +5,7 @@ using System;
 namespace CC
 {
 
-    public class ScaleTo : ActionInterval
+	public class ScaleTo : ActionInterval
     {
         protected float startScale;
 
