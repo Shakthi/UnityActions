@@ -75,7 +75,7 @@ namespace CC
 			return duration;
 		}
 
-		public FiniteTimeAction(float  aduration)
+		public FiniteTimeAction(float  aduration = 0)
 		{
 			duration = aduration;
 		}
