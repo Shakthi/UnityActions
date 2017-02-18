@@ -18,7 +18,26 @@ public abstract class  ActionEase : ActionInterval
 		public ActionEase(ActionInterval inner )
 		{
 			this.inner = inner;
+			this.duration = inner.GetDuration();
 		}
+
+	
+
+		public override void StartWithTarget(Transform inTarget)
+		{
+			base.StartWithTarget(inTarget);
+			inner.StartWithTarget(inTarget);
+		}
+
+		public override void Stop()
+		{
+			
+			inner.Stop();
+			base.Stop();
+		}
+
+
+
 
 
 }
@@ -384,7 +403,7 @@ public class  EaseExponentialInOut :  ActionEase
     */
 
 
-		EaseElasticIn(ActionInterval interval,  float period):base(interval,period)
+		public EaseElasticIn(ActionInterval interval,  float period):base(interval,period)
 		{
 			
 		}
@@ -433,7 +452,7 @@ public class  EaseExponentialInOut :  ActionEase
     */
 
 
-		EaseElasticOut(ActionInterval interval,  float period):base(interval,period)
+		public EaseElasticOut(ActionInterval interval,  float period):base(interval,period)
 		{
 
 		}
@@ -484,7 +503,7 @@ public class  EaseExponentialInOut :  ActionEase
     */
 
 
-		EaseElasticInOut(ActionInterval interval,  float period):base(interval,period)
+		public EaseElasticInOut(ActionInterval interval,  float period):base(interval,period)
 		{
 
 		}
