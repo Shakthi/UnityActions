@@ -828,12 +828,12 @@ class  Repeat :  ActionInterval
 		
 		public override Action Reverse ()
 		{
-			return new RotateTo(duration,Quaternion.Inverse( _diffAngle));
+			return new RotateBy(duration,Quaternion.Inverse( _diffAngle));
 		}
 		
 		public override Action Clone ()
 		{
-			return new RotateTo(duration,_diffAngle);
+			return new RotateBy(duration,_diffAngle);
 		}
 		
 		

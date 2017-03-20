@@ -24,6 +24,18 @@ public class TestActions : MonoBehaviour
 
 	IEnumerator ShowDemo()
 	{
+		Debug.Log(" exicuting sequence and with ease actions  ");
+		ResetMovingObject();
+		Sequence q2= new Sequence(new EaseOut( new MoveBy(3 ,new Vector3(3,1,1)),0.2f),
+			new EaseExponentialInOut(new RotateBy(5,new Vector3(180,0,0))),
+			new MoveBy(3 ,new Vector3(-3,1,1)),
+			new EaseBounceIn(new RotateBy(3,new Vector3(0,60,0)))
+
+		);
+		Action.Run(movingObject, new Repeat(q2,2));
+		yield return new WaitForSeconds(30);
+
+
 		yield return StartCoroutine(anAnimation());
 
 		Debug.Log("Actor demo done. Now exicuting two actions parallely ");
@@ -47,6 +59,8 @@ public class TestActions : MonoBehaviour
 		yield return new WaitForSeconds(30);
 
 
+
+	
 
 
 

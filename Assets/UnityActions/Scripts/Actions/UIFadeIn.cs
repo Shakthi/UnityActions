@@ -10,7 +10,7 @@ namespace CC
      */
     public class UIFadeIn : ActionInterval
     {
-        private float startAlpha = 0.0f;
+        private float startAlpha = 0.0f;//TODO:
         private float endAlpha = 1.0f;
         private CanvasRenderer canvasRenderer;
         private CanvasGroup canvasGroup;

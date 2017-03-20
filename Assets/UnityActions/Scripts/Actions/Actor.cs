@@ -53,13 +53,21 @@ public class Actor:MonoBehaviour  {
 		public Coroutine PerformAction(FiniteTimeAction anAction)
 		{
 			return StartCoroutine(YieldAction(anAction));
-
+		}
+		
+		public Coroutine Sequence(params FiniteTimeAction[] list)
+		{
+			return PerformAction(new CC.Sequence(list));
+		}
+		
+		public Coroutine Spawn(params FiniteTimeAction[] list)
+		{
+			return PerformAction(new CC.Spawn(list));
 		}
 
 		public Coroutine MoveBy(float aduration,Vector3 diff)
 		{
 			return PerformAction(new CC.MoveBy(aduration,diff));
-
 		}
 
 		public Coroutine MoveTo(float duraction,Vector3 targetPos)
@@ -67,6 +75,22 @@ public class Actor:MonoBehaviour  {
 			return PerformAction(new CC.MoveTo(duraction,targetPos));
 		}
 
-
 }
+
+	public static class ActorExtensions {
+		
+		public static Coroutine RunAction(this MonoBehaviour component, FiniteTimeAction action) {
+			return Actor.GetActor (component.transform).PerformAction (action);
+		}
+		
+		public static Coroutine RunSequence(this MonoBehaviour component, params FiniteTimeAction[] actions) {
+			return Actor.GetActor (component.transform).Sequence (actions);
+		}
+		
+		public static Coroutine RunSpawn(this MonoBehaviour component, params FiniteTimeAction[] actions) {
+			return Actor.GetActor (component.transform).Spawn (actions);
+		}
+
+	}
+	
 }

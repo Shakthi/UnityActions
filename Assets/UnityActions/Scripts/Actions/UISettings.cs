@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+//TODO: Remove this file
 namespace CC
 {
     public enum UISetup
