@@ -922,15 +922,20 @@ class  Repeat :  ActionInterval
 		
 	};
 
-
-
-
-
-
-
-	
-
-
-
-
+    /// <summary>
+    /// Move a Transform Object to a parabolic position simulating a jump position by modifying it's position attribute
+    /// </summary>
+    public class JumpTo : JumpBy
+    {
+        protected Vector3 _endPosition;
+        public JumpTo(float aduration, Vector3 position, float height, int jumps) : base(aduration, position, height, jumps)
+        {
+            _endPosition = position;
+        }
+        public override void StartWithTarget(Transform aTransform)
+        {
+            base.StartWithTarget(aTransform);
+            _delta = new Vector3(_endPosition.x - _startPosition.x, _endPosition.y - _startPosition.y, _endPosition.z - _startPosition.z);
+        }
+    }
 }
