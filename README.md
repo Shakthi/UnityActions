@@ -57,7 +57,7 @@ There is a  lot of sugar in cocos2d in waiting to be ported to Unity3d! All cont
 ## License
 Apache License
 ---
-**Free Software, Hell Yeah!** -- hehe markdown porked from http://dillinger.io
+**Free Software, Hell Yeah!** -- hehe markdown forked from http://dillinger.io
 
 
 - [Cocos2d iphone project ](https://github.com/cocos2d/cocos2d-objc)
