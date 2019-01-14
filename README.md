@@ -6,13 +6,13 @@ Actions are one of the powerfull feature of cocos2d that I always missed in Unit
 
 With actions, making an animation may not be simpler than this.
 ```c#
-Action.Run(aTransform,new MoveBy(10 ,new Vector3(10,1,1)));
+Action.Run(aTransform,new MoveBy(10,new Vector3(10,1,1)));
 ```
 Above code move/transforms 'aTransform' by Vector3(10,1,1) units in 10 seconds. Now this is basic one, more complex example follows.
 ```c#
-  Sequence seq= new Sequence(new MoveBy(3 ,new Vector3(10,1,1)),
+  Sequence seq= new Sequence(new MoveBy(3,new Vector3(10,1,1)),
 								new RotateBy(5,new Vector3(180,0,0)),
-								    new MoveBy(3 ,new Vector3(-10,1,1)),
+								    new MoveBy(3,new Vector3(-10,1,1)),
 								       new RotateBy(3,new Vector3(0,60,0))
 							);
 							
